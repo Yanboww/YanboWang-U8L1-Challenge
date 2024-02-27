@@ -37,38 +37,52 @@ public class Main {
        {
            System.out.println("File not found");
        }
-       int count = 0;
-       for(int i = 0;i<names.size();i++)
+       editChart(names,seatingChart,originalSeats);
+        int[] finalCoord = findWord(seatingChart, null);
+        if(finalCoord[0]!=-1 && finalCoord[1]!=-1)
+        {
+            seatingChart[finalCoord[0]][finalCoord[1]] = names.get(names.size()-1);
+        }
+       String student = names.get(names.size()-1);
+       int[] coordLast = findWord(seatingChart,student);
+       int row = coordLast[0];
+       int column = coordLast[1];
+       int left =column;
+       int right = column;
+       if(column!=0) right = column-1;
+       if(column!=seatingChart[row].length-1) right = column+1;
+       while(wasNextToEachOther(seatingChart[row][left],student,originalSeats) ||wasNextToEachOther(seatingChart[row][right],student,originalSeats))
        {
-           String student = names.get(i);
-           System.out.println(student);
-           count++;
-           System.out.println(count);
-           if(i==33)
+           //System.out.println("a");
+           seatingChart = new String[6][];
+           seatingChart[0] = new String[12];
+           seatingChart[1] = new String[6];
+           seatingChart[2] = new String[6];
+           seatingChart[3] = new String[2];
+           seatingChart[4] = new String[4];
+           seatingChart[5] = new String[4];
+           editChart(names,seatingChart,originalSeats);
+           finalCoord = findWord(seatingChart, null);
+           if(finalCoord[0]!=-1 && finalCoord[1]!=-1)
            {
-               int[] finalCoord = findNull(seatingChart);
-               seatingChart[finalCoord[0]][finalCoord[1]] = student;
-               break;
+               seatingChart[finalCoord[0]][finalCoord[1]] = names.get(names.size()-1);
            }
-           boolean set = false;
-           while(!set)
+           coordLast = findWord(seatingChart,names.get(names.size()-1));
+           row = coordLast[0];
+           column = coordLast[1];
+           left =column;
+           right = column;
+           if(column>0) right = column-1;
+           if(coordLast[0]>-1 && coordLast[1]>-1)
            {
-               int row = (int)(Math.random()*6);
-               int column = generateColumnNum(row);
-               int left =column;
-               int right = column;
-               if(column!=0) right = column-1;
-               if(column!=seatingChart[row].length-1) right = column+1;
-               if(!sameSeat(student,row,column,originalSeats) && seatingChart[row][column] ==null)
-               {
-                   if(!wasNextToEachOther(seatingChart[row][left],student,originalSeats) && !wasNextToEachOther(seatingChart[row][right],student,originalSeats))
-                   {
-                       seatingChart[row][column] = student;
-                       set = true;
-                   }
-               }
+               if(column<seatingChart[row].length-1) right = column+1;
            }
        }
+        finalCoord = findWord(seatingChart, null);
+        if(finalCoord[0]!=-1 && finalCoord[1]!=-1)
+        {
+            seatingChart[finalCoord[0]][finalCoord[1]] = names.get(names.size()-2);
+        }
        print2DArray(seatingChart);
     }
     public static void print2DArray(String[][] seatingChart)
@@ -101,9 +115,9 @@ public class Main {
         if(name1 == null || name2 == null || name1.contains("N/A") || name2.contains("N/A")) return false;
         int seat1 = original.get(name1);
         int seat2 = original.get(name2);
-        System.out.println(seat1);
-        System.out.println(seat2);
-        if(Math.abs(seat2-seat1)==1 && inTheSameRow(seat1,seat2)) return true;
+        if(Math.abs(seat2-seat1)==1 && inTheSameRow(seat1,seat2)) {
+            return true;
+        }
         return false;
     }
 
@@ -138,14 +152,15 @@ public class Main {
         if(Integer.parseInt(tempArray[column])==prevSeat) return true;
         return false;
     }
-   public static int[] findNull (String[][] seatingChart)
+   public static int[] findWord (String[][] seatingChart, String value)
     {
         int[] nullArray = {-1,-1};
         for(int i =0;i<seatingChart.length;i++)
         {
             for(int a = 0;a<seatingChart[i].length;a++)
             {
-                if(seatingChart[i][a]==null){
+                if(value == "Ryan Chen") System.out.println(seatingChart[i][a]);
+                if(seatingChart[i][a]==value){
                     nullArray[0] = i;
                     nullArray[1] = a;
                     return nullArray;
@@ -154,5 +169,56 @@ public class Main {
         }
         return nullArray;
     }
+
+    public static void editChart(ArrayList<String> names,String[][] seatingChart,HashMap<String,Integer> originalSeats)
+    {
+        for(int i = 0;i<names.size();i++)
+        {
+            int count =400;
+            String student = names.get(i);
+            if(i==33)
+            {
+                int[] finalCoord = findWord(seatingChart, null);
+                seatingChart[finalCoord[0]][finalCoord[1]] = student;
+                break;
+            }
+            boolean set = false;
+            while(!set)
+            {   count++;
+                int row = (int)(Math.random()*6);
+                int column = generateColumnNum(row);
+                int left =column;
+                int right = column;
+                if(column!=0) right = column-1;
+                if(column!=seatingChart[row].length-1) right = column+1;
+                if(!sameSeat(student,row,column,originalSeats) && seatingChart[row][column] ==null)
+                {
+                    if(!wasNextToEachOther(seatingChart[row][left],student,originalSeats) && !wasNextToEachOther(seatingChart[row][right],student,originalSeats))
+                    {
+                        seatingChart[row][column] = student;
+                        set = true;
+                    }
+                }
+                if(count>500)
+                {
+                    //System.out.println("U");
+                    break;
+                }
+            }
+            if(count>500)
+            {
+                seatingChart = new String[6][];
+                seatingChart[0] = new String[12];
+                seatingChart[1] = new String[6];
+                seatingChart[2] = new String[6];
+                seatingChart[3] = new String[2];
+                seatingChart[4] = new String[4];
+                seatingChart[5] = new String[4];
+                editChart(names,seatingChart,originalSeats);
+                break;
+            }
+        }
+    }
+
 
 }
