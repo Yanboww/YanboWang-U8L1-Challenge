@@ -24,7 +24,7 @@ public class Main {
            while(s.hasNextLine())
            {
                String next = s.nextLine();
-               if(!next.equals("-"))
+               if(!next.equals("-") && !next.contains("N/A"))
                {
                    String[] temp = next.split(":");
                    temp[1]= temp[1].trim();
@@ -53,7 +53,7 @@ public class Main {
        if(column!=seatingChart[row].length-1) right = column+1;
        while(wasNextToEachOther(seatingChart[row][left],student,originalSeats) ||wasNextToEachOther(seatingChart[row][right],student,originalSeats))
        {
-           //System.out.println("a");
+           System.out.println("a");
            seatingChart = new String[6][];
            seatingChart[0] = new String[12];
            seatingChart[1] = new String[6];
@@ -62,11 +62,6 @@ public class Main {
            seatingChart[4] = new String[4];
            seatingChart[5] = new String[4];
            editChart(names,seatingChart,originalSeats);
-           finalCoord = findWord(seatingChart, null);
-           if(finalCoord[0]!=-1 && finalCoord[1]!=-1)
-           {
-               seatingChart[finalCoord[0]][finalCoord[1]] = names.get(names.size()-1);
-           }
            coordLast = findWord(seatingChart,names.get(names.size()-1));
            row = coordLast[0];
            column = coordLast[1];
@@ -78,11 +73,13 @@ public class Main {
                if(column<seatingChart[row].length-1) right = column+1;
            }
        }
-        finalCoord = findWord(seatingChart, null);
-        if(finalCoord[0]!=-1 && finalCoord[1]!=-1)
-        {
-            seatingChart[finalCoord[0]][finalCoord[1]] = names.get(names.size()-2);
-        }
+       seatingChart[0][4] = "N/A (Computer not Available)";
+       while(findWord(seatingChart,null)[0]!=-1)
+       {
+           int[] notThereCoord = findWord(seatingChart,null);
+           seatingChart[notThereCoord[0]][notThereCoord[1]] ="N/A";
+
+       }
        print2DArray(seatingChart);
     }
     public static void print2DArray(String[][] seatingChart)
@@ -201,7 +198,7 @@ public class Main {
                 }
                 if(count>500)
                 {
-                    //System.out.println("U");
+                    System.out.println("U");
                     break;
                 }
             }
